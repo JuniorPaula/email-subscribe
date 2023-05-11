@@ -4,9 +4,14 @@ go 1.19
 
 require github.com/jackc/pgconn v1.14.0
 
-require github.com/jackc/pgtype v1.14.0 // indirect
+require (
+	github.com/jackc/pgtype v1.14.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+)
 
 require (
+	github.com/alexedwards/scs v1.4.1
+	github.com/gomodule/redigo v1.8.9
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
