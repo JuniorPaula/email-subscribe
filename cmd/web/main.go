@@ -2,14 +2,14 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"sync"
 	"time"
 
-	"github.com/alexedwards/scs"
-	"github.com/alexedwards/scs/stores/redisstore"
+	"github.com/alexedwards/scs/redisstore"
 	"github.com/alexedwards/scs/v2"
 	"github.com/gomodule/redigo/redis"
 	_ "github.com/jackc/pgconn"
@@ -18,7 +18,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const webPort = "80"
+const webPort = "8080"
 
 func main() {
 	err := godotenv.Load()
@@ -49,10 +49,24 @@ func main() {
 		InfoLog:  infoLogger,
 		ErrorLog: errorLogger,
 	}
-
 	// set up mail
 
 	// listen for web connections
+	app.serve()
+}
+
+func (app *Config) serve() {
+	// start http server
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+
+	app.InfoLog.Println("Starting web server...")
+	err := srv.ListenAndServe()
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 func initDB() *sql.DB {

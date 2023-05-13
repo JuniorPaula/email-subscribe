@@ -5,7 +5,6 @@ import (
 	"log"
 	"sync"
 
-	"github.com/alexedwards/scs"
 	"github.com/alexedwards/scs/v2"
 )
 
