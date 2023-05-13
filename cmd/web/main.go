@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"subscription-service/data"
 	"sync"
 	"syscall"
 	"time"
@@ -50,6 +51,7 @@ func main() {
 		Wait:     &wg,
 		InfoLog:  infoLogger,
 		ErrorLog: errorLogger,
+		Models:   data.New(db),
 	}
 	// set up mail
 
