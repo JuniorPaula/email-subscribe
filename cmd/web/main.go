@@ -165,7 +165,12 @@ func (app *Config) shutdown() {
 	// block until waigroup is empty
 	app.Wait.Wait()
 
+	app.Mailer.DoneChan <- true
+
 	app.InfoLog.Println("closing channels and shutdown application...")
+	close(app.Mailer.MailerChan)
+	close(app.Mailer.ErrorChan)
+	close(app.Mailer.DoneChan)
 }
 
 func (app *Config) createMail() Mail {
