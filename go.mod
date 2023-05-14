@@ -21,6 +21,7 @@ require (
 require (
 	github.com/alexedwards/scs v1.4.1
 	github.com/alexedwards/scs/redisstore v0.0.0-20230327161757-10d4299e3b24
+	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/gomodule/redigo v1.8.9
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
