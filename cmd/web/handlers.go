@@ -233,6 +233,21 @@ func (app *Config) SubscribePlan(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// subscribe the user to an account
+	err = app.Models.Plan.SubscribeUserToPlan(user, *plan)
+	if err != nil {
+		app.Session.Put(r.Context(), "error", "Error subscribing tp plan!")
+		http.Redirect(w, r, "/members/plans", http.StatusSeeOther)
+		return
+	}
+
+	u, err := app.Models.User.GetOne(user.ID)
+	if err != nil {
+		app.Session.Put(r.Context(), "error", "Error getting user from database!")
+		http.Redirect(w, r, "/members/plans", http.StatusSeeOther)
+		return
+	}
+
+	app.Session.Put(r.Context(), "user", u)
 
 	// redirect
 	app.Session.Put(r.Context(), "flash", "Subscribered!")
