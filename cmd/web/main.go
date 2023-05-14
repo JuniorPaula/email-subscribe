@@ -47,13 +47,16 @@ func main() {
 
 	// set up application config
 	app := Config{
-		Session:  session,
-		DB:       db,
-		Wait:     &wg,
-		InfoLog:  infoLogger,
-		ErrorLog: errorLogger,
-		Models:   data.New(db),
+		Session:       session,
+		DB:            db,
+		Wait:          &wg,
+		InfoLog:       infoLogger,
+		ErrorLog:      errorLogger,
+		Models:        data.New(db),
+		ErrorChan:     make(chan error),
+		ErrorChanDone: make(chan bool),
 	}
+
 	// set up mail
 	app.Mailer = app.createMail()
 	go app.listenForEmail()
@@ -61,8 +64,22 @@ func main() {
 	// listen for signal
 	go app.listenForShutdown()
 
+	// listen for errors
+	go app.listenForErrors()
+
 	// listen for web connections
 	app.serve()
+}
+
+func (app *Config) listenForErrors() {
+	for {
+		select {
+		case err := <-app.ErrorChan:
+			app.ErrorLog.Println(err)
+		case <-app.ErrorChanDone:
+			return
+		}
+	}
 }
 
 func (app *Config) serve() {
@@ -166,11 +183,14 @@ func (app *Config) shutdown() {
 	app.Wait.Wait()
 
 	app.Mailer.DoneChan <- true
+	app.ErrorChanDone <- true
 
 	app.InfoLog.Println("closing channels and shutdown application...")
 	close(app.Mailer.MailerChan)
 	close(app.Mailer.ErrorChan)
 	close(app.Mailer.DoneChan)
+	close(app.ErrorChan)
+	close(app.ErrorChanDone)
 }
 
 func (app *Config) createMail() Mail {
